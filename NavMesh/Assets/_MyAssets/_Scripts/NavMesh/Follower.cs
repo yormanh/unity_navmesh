@@ -8,18 +8,42 @@ public class Follower : MonoBehaviour
     NavMeshAgent _agent;
     [SerializeField] Transform _destiny;
     [SerializeField] Transform _puntero;
- 
+    float _initDistancia;
+    Material _punteroMaterial;
+    Animator _animator;
+
+
+
     void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _punteroMaterial = _puntero.GetComponentInChildren<MeshRenderer>().material;
+        _animator = GetComponentInChildren<Animator>();
+
         //_agent.SetDestination(_destiny.position);
 
     }
 
- 
+
     void Update()
     {
+        _animator.SetFloat("velocity", _agent.velocity.magnitude);
         //_agent.SetDestination(_destiny.position);
+        //print(_agent.remainingDistance); //Debug.Log
+
+        //if (_agent.remainingDistance < 0.1f)
+        //    _puntero.gameObject.SetActive(false);
+        //else
+        //    _puntero.gameObject.SetActive(true);
+        //Esta linea es igual a la condiciones anteriores
+        _puntero.gameObject.SetActive(_agent.remainingDistance >= 0.1f);
+
+        if (_agent.remainingDistance >= 0.1f)
+        {
+            float alpha = _agent.remainingDistance / _initDistancia;
+            _punteroMaterial.SetColor("_Color",
+                new Color(1,1,1,alpha));
+        }
 
         if (Input.GetMouseButtonDown(0)) //GetMouseButton GetMouseButtonUp
         {
@@ -34,27 +58,23 @@ public class Follower : MonoBehaviour
             //    //hits[i];
             //}
 
-            bool isRampa = false;
+            float altura = -1000.0f;
             foreach (var hit in hits)
             {
 
-
-                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Suelo"))
+                if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Suelo")
+                    && hit.point.y > altura)
                 {
-                    if(hit.collider.name == "Rampa")
-                    {
-                        isRampa = true;
-                        _agent.SetDestination(hit.point);
-                        _puntero.position = hit.point;
-                        _puntero.rotation = Quaternion.LookRotation(hit.normal);
 
-                    }
-                    else if (isRampa == false)
-                    {
-                        _agent.SetDestination(hit.point);
-                        _puntero.position = hit.point;
-                        _puntero.rotation = Quaternion.LookRotation(hit.normal);
-                    }
+
+                    _initDistancia = Vector3.Distance(transform.position
+                        , hit.point);
+                    _agent.SetDestination(hit.point);
+                    _puntero.position = hit.point;
+                    //_puntero.position = hit.point + hit.normal * 0.1f;
+                    _puntero.rotation = Quaternion.LookRotation(hit.normal);
+                    altura = hit.point.y;
+
                 }
 
                 ButtonBox buttonBox = hit.collider.GetComponent<ButtonBox>();
