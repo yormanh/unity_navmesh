@@ -5,15 +5,29 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider))]
 public class ButtonBox : MonoBehaviour
 {
-    
-    void Start()
+    [SerializeField]GameObject _puertaObject;
+    Animator _animator;
+    bool isDentro = false;
+
+    private void Awake()
     {
-        
+        _animator = _puertaObject.GetComponent<Animator>();
     }
 
-    
-    void Update()
+    public void Use()
     {
-        
+        if (isDentro)
+            _animator.SetBool("IsOpen", true);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        isDentro = true;
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        isDentro = false;
+    }
+
+
 }

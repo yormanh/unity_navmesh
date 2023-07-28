@@ -65,22 +65,27 @@ public class Follower : MonoBehaviour
                 if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Suelo")
                     && hit.point.y > altura)
                 {
+                    NavMeshPath path = new NavMeshPath();
+                    _agent.CalculatePath(hit.point, path);
 
-
-                    _initDistancia = Vector3.Distance(transform.position
-                        , hit.point);
-                    _agent.SetDestination(hit.point);
-                    _puntero.position = hit.point;
-                    //_puntero.position = hit.point + hit.normal * 0.1f;
-                    _puntero.rotation = Quaternion.LookRotation(hit.normal);
-                    altura = hit.point.y;
+                    //Debug.Log(path.status);
+                    if (path.status == NavMeshPathStatus.PathComplete)
+                    {
+                        _initDistancia = Vector3.Distance(transform.position
+                            , hit.point);
+                        _agent.SetDestination(hit.point);
+                        _puntero.position = hit.point;
+                        //_puntero.position = hit.point + hit.normal * 0.1f;
+                        _puntero.rotation = Quaternion.LookRotation(hit.normal);
+                        altura = hit.point.y;
+                    }
 
                 }
 
                 ButtonBox buttonBox = hit.collider.GetComponent<ButtonBox>();
                 if (buttonBox)
                 {
-                    //buttonBox.Use();
+                    buttonBox.Use();
                 }
 
 
