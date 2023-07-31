@@ -27,6 +27,8 @@ public class Follower : MonoBehaviour
 
     void Update()
     {
+        if (!_agent.enabled) return;
+
         _animator.SetFloat("velocity", _agent.velocity.magnitude);
         //_agent.SetDestination(_destiny.position);
         //print(_agent.remainingDistance); //Debug.Log
